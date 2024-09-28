@@ -1,0 +1,4 @@
+# ninja log v5
+0	29	1725326711073137531	CMakeFiles/program1.dir/library.c.o	d1ed7199637e9fff
+0	59	1725326776969447823	CMakeFiles/program1.dir/h1-counter.c.o	9aade1dcf6b5761a
+59	82	1725326776994055000	libprogram1.a	6f5a290b930f8cd2

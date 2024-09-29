@@ -75,11 +75,25 @@ int main(int argc, char *argv[]) {
   char userCommand[100];
   char *host = argv[1];
   char * port = argv[2];
-  char * id = argv[3];
-  char buffer[1024];
   int s;
   int total = 0;
   int count = 0;
+
+  int id = atoi(argv[3]);
+  char buffer[1024];
+
+  unsigned char* num = malloc(5);
+  num[0] = 0x00;
+
+  // Convert id to network byte order (big-endian)
+  uint32_t net_id = htonl(id);  // Convert id to 4-byte network byte order
+
+  // Copy the network byte ordered id into num[1] to num[4]
+  memcpy(&num[1], &net_id, 4);
+
+  // Optionally print the contents of num to verify
+  printf("in hex\n",
+         num[0], num[1], num[2], num[3], num[4]);
 
   if ((s = lookup_and_connect(host, port)) < 0) {
     exit(1);

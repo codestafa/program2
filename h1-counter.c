@@ -74,8 +74,8 @@ int main(int argc, char *argv[]) {
 
   char userCommand[100];
   char *host = argv[1];
-  const char * port = argv[2];
-  int id = atoi(argv[3]);
+  char * port = argv[2];
+  char * id = argv[3];
   char buffer[1024];
   int s;
   int total = 0;
@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
     // Join logic
     if (strcmp(userCommand, "JOIN") == 0 || strcmp(userCommand, "join") == 0) {
       printf("Joining...\n");
-          if (sendall(s, buffer, sizeof(buffer)) == -1) {
+          if (sendall(s, id, sizeof(id)) == -1) {
               perror("sendall");
           } else {
             printf("i am here 5 \n");

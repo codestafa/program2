@@ -115,9 +115,6 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  }
-
-
 
   //    char *file = "GET /~kkredo/file.html HTTP/1.0\r\n\r\n";
   //    int fileLength = strlen(file);

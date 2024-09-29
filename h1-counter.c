@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
     // Join logic
     if (strcmp(userCommand, "JOIN") == 0 || strcmp(userCommand, "join") == 0) {
       printf("Joining...\n");
-          if (sendall(s, id, sizeof(id)) == -1) {
+          if (send(s, id, sizeof(id), 0) == -1) {
               perror("sendall");
           } else {
             printf("i am here 5 \n");

@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
       // Using custom send function for partial sends
 //      if (sendall(s, buffer, strlen(buffer)) == -1) {
 //        perror("sendall");
-        printf("%d bytes have been sent\n", strlen(buffer));
+        break;
 //      }
     }
 

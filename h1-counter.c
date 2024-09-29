@@ -88,18 +88,13 @@ int main(int argc, char *argv[]) {
   while (1) {
     printf("Enter JOIN, PUBLISH, SEARCH, or exit: \n");
     fgets(userCommand, sizeof(userCommand), stdin);
-    printf("i am here \n");
     // Remove newline character if present
     userCommand[strcspn(userCommand, "\n")] = 0;
-    printf("i am here 2 \n");
 
     // Ensure the string is null-terminated
     userCommand[sizeof(userCommand) - 1] = '\0';
-    printf("i am here 3 \n");
 
     // Debugging: Print the string and its length
-    printf("You entered: '%s', length: %ld\n", userCommand, strlen(userCommand));
-    printf("i am here 4 \n");
 
     // Join logic
     if (strcmp(userCommand, "JOIN") == 0 || strcmp(userCommand, "join") == 0) {
@@ -107,7 +102,6 @@ int main(int argc, char *argv[]) {
           if (send(s, id, sizeof(id), 0) == -1) {
               perror("sendall");
           } else {
-            printf("i am here 5 \n");
           }
     }
 

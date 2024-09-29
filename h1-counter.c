@@ -89,18 +89,17 @@ int main(int argc, char *argv[]) {
     printf("Enter JOIN, PUBLISH, SEARCH, or exit: \n");
     fgets(userCommand, sizeof(userCommand), stdin);
 
-    // Remove the newline character if it exists
+    // Remove newline character if present
     userCommand[strcspn(userCommand, "\n")] = 0;
+
+    // Debugging statement to print what was entered
+    printf("You entered: '%s'\n", userCommand);
 
     // Join logic
     if (strcmp(userCommand, "JOIN") == 0 || strcmp(userCommand, "join") == 0) {
-      // Uncomment and implement your logic
-       if (sendall(s, buffer, strlen(buffer)) == -1) {
-          perror("sendall");
-          printf("THE JOIN DIDNT WORK!")
-          break;
-       }
-       printf("THE JOIN WORKED!")
+      printf("Joining...\n");
+      // Uncomment and implement your join logic here
+      break; // Make sure this is not commented out
     }
 
     // Exit logic
@@ -108,6 +107,7 @@ int main(int argc, char *argv[]) {
       printf("Exiting...\n");
       break;
     }
+  }
   }
 
 

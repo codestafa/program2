@@ -92,13 +92,15 @@ int main(int argc, char *argv[]) {
     // Remove newline character if present
     userCommand[strcspn(userCommand, "\n")] = 0;
 
-    // Debugging statement to print what was entered
-    printf("You entered: '%s'\n", userCommand);
+    // Ensure the string is null-terminated
+    userCommand[sizeof(userCommand) - 1] = '\0';
+
+    // Debugging: Print the string and its length
+    printf("You entered: '%s', length: %ld\n", userCommand, strlen(userCommand));
 
     // Join logic
     if (strcmp(userCommand, "JOIN") == 0 || strcmp(userCommand, "join") == 0) {
       printf("Joining...\n");
-      // Uncomment and implement your join logic here
       break; // Make sure this is not commented out
     }
 
@@ -108,6 +110,7 @@ int main(int argc, char *argv[]) {
       break;
     }
   }
+  
   }
 
 

@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
   memcpy(&num[1], &net_id, 4);
 
   // Optionally print the contents of num to verify
-  printf("in hex\n",
+  printf("Command: 0x%02x, ID in hex: 0x%02x%02x%02x%02x\n",
          num[0], num[1], num[2], num[3], num[4]);
 
   if ((s = lookup_and_connect(host, port)) < 0) {
@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
     // Join logic
     if (strcmp(userCommand, "JOIN") == 0 || strcmp(userCommand, "join") == 0) {
       printf("Joining...\n");
-          if (send(s, id, sizeof(id), 0) == -1) {
+          if (send(s, num, sizeof(num), 0) == -1) {
               perror("sendall");
           } else {
           }

@@ -87,22 +87,29 @@ int main(int argc, char *argv[]) {
 
   while (1) {
     printf("Enter JOIN, PUBLISH, SEARCH, or exit: \n");
-    scanf("%s", userCommand);
+    fgets(userCommand, sizeof(userCommand), stdin);
+
+    // Remove the newline character if it exists
+    userCommand[strcspn(userCommand, "\n")] = 0;
 
     // Join logic
     if (strcmp(userCommand, "JOIN") == 0 || strcmp(userCommand, "join") == 0) {
-      // Using custom send function for partial sends
-//      if (sendall(s, buffer, strlen(buffer)) == -1) {
-//        perror("sendall");
-        break;
-//      }
+      // Uncomment and implement your logic
+       if (sendall(s, buffer, strlen(buffer)) == -1) {
+          perror("sendall");
+          printf("THE JOIN DIDNT WORK!")
+          break;
+       }
+       printf("THE JOIN WORKED!")
     }
 
-    // Exit Logic
+    // Exit logic
     if (strcmp(userCommand, "EXIT") == 0 || strcmp(userCommand, "exit") == 0) {
+      printf("Exiting...\n");
       break;
     }
   }
+
 
 
   //    char *file = "GET /~kkredo/file.html HTTP/1.0\r\n\r\n";

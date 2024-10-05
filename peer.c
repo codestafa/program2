@@ -5,6 +5,9 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <stdbool.h>
+#include <dirent.h>
+#include <sys/types.h>
 
 // Change printf to getline or more elegant solution
 // Change lower to upper to more elegant solution
@@ -23,24 +26,64 @@
 /* Custom function that abstracts away the first few parts of connecting with the server */
 int lookup_and_connect( const char *host, const char *service );
 
-/* Custom function from Beej that handles partial sends */
-int sendall(int s, char *buf, int len)
-{
-  int total = 0;
-  int bytesleft = len;
-  int n;
 
-  while(total < len) {
-    n = send(s, buf+total, bytesleft, 0);
-    if (n == -1) { break; }
-    total += n;
-    bytesleft -= n;
+typedef struct {
+  char **fileNames;  // Array of file names
+  int fileCount;     // Number of files found
+} FileList;
+
+FileList fileCounter(void) {
+  DIR *dir;
+  struct dirent *entry;
+  char *dirName = "./SharedFiles";  // Directory to scan
+  int count = 0;
+  int maxFiles = 100;  // Set a maximum number of files to track
+  char **charArr = malloc(maxFiles * sizeof(char*)); // Allocate memory for the array of strings
+
+  if (!charArr) {
+    perror("malloc");
+    exit(EXIT_FAILURE);  // Exit if memory allocation fails
   }
 
-  len = total;
+  // Open the directory
+  dir = opendir(dirName);
+  if (!dir) {
+    perror("opendir");
+    free(charArr);  // Free allocated memory if directory fails to open
+    exit(EXIT_FAILURE);
+  }
 
-  return n==-1?-1:0;
+  // Loop through the directory entries
+  while ((entry = readdir(dir)) != NULL && count < maxFiles) {
+    // Check if the entry is a regular file
+    if (entry->d_type == DT_REG) {  // DT_REG means regular file
+      charArr[count] = malloc(strlen(entry->d_name) + 1); // Allocate memory for the file name
+      if (!charArr[count]) {
+        perror("malloc");
+        // Cleanup if allocation fails
+        for (int i = 0; i < count; i++) {
+          free(charArr[i]);
+        }
+        free(charArr);
+        closedir(dir);
+        exit(EXIT_FAILURE);
+      }
+      strcpy(charArr[count], entry->d_name);  // Copy the file name
+      count++;
+    }
+  }
+
+  // Close the directory stream
+  closedir(dir);
+
+  // Create and return a FileList struct
+  FileList result;
+  result.fileNames = charArr;
+  result.fileCount = count;
+
+  return result;
 }
+
 
 /* Custom function that handles partial recieves */
 int recvall(int s, char *buf, int *len) {
@@ -59,12 +102,6 @@ int recvall(int s, char *buf, int *len) {
   return total;
 }
 
-void toUpper(char *str) {
-  for (int i = 0; str[i]; i++) {
-    str[i] = toupper(str[i]);
-  }
-}
-
 int main(int argc, char *argv[]) {
 
   if (argc != 4) {  // Check if the correct number of arguments is provided
@@ -72,28 +109,38 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+
   char userCommand[100];
   char *host = argv[1];
   char * port = argv[2];
+  char * fileLocation = "SharedFiles";
   int s;
+  bool userJoined = false;
   int total = 0;
-  int count = 0;
 
   int id = atoi(argv[3]);
   char buffer[1024];
 
-  unsigned char* num = malloc(5);
-  num[0] = 0x00;
+  // Join
+  unsigned char* idBytes = malloc(5);
+  idBytes[0] = 0x00;
+
+  // Publish
+  unsigned char* publishMessage = malloc(5);
+
+  FileList files = fileCounter();  // Pass the address of fileCount to store the number of files
+  publishMessage[0] = 0x1;
 
   // Convert id to network byte order (big-endian)
   uint32_t net_id = htonl(id);  // Convert id to 4-byte network byte order
+  uint32_t fileCount_htonl = htonl(files.fileCount);  // Convert id to 4-byte network byte order
 
   // Copy the network byte ordered id into num[1] to num[4]
-  memcpy(&num[1], &net_id, 4);
+  memcpy(&idBytes[1], &net_id, 4);
 
-  // Optionally print the contents of num to verify
-  printf("Command: 0x%02x, ID in hex: 0x%02x%02x%02x%02x\n",
-         num[0], num[1], num[2], num[3], num[4]);
+  memcpy(&publishMessage[1], &fileCount_htonl, 4);
+  memcpy(&publishMessage[2], &files.fileNames, sizeof(files.fileNames));
+
 
   if ((s = lookup_and_connect(host, port)) < 0) {
     exit(1);
@@ -101,22 +148,33 @@ int main(int argc, char *argv[]) {
 
   while (1) {
     printf("Enter JOIN, PUBLISH, SEARCH, or exit: \n");
-    fgets(userCommand, sizeof(userCommand), stdin);
-    // Remove newline character if present
-    userCommand[strcspn(userCommand, "\n")] = 0;
 
-    // Ensure the string is null-terminated
+    fgets(userCommand, sizeof(userCommand), stdin);
+    userCommand[strcspn(userCommand, "\n")] = 0;
     userCommand[sizeof(userCommand) - 1] = '\0';
 
-    // Debugging: Print the string and its length
 
     // Join logic
-    if (strcmp(userCommand, "JOIN") == 0 || strcmp(userCommand, "join") == 0) {
+    if ((strcmp(userCommand, "JOIN") == 0 || strcmp(userCommand, "join") == 0) && !userJoined) {
       printf("Joining...\n");
-          if (send(s, num, sizeof(num), 0) == -1) {
+          if (send(s, idBytes, sizeof(idBytes), 0) == -1) {
               perror("sendall");
-          } else {
           }
+          else {
+            printf("Joined...\n");
+            userJoined = true;
+
+          }
+    }
+
+    if ((strcmp(userCommand, "PUBLISH") == 0 || strcmp(userCommand, "publish") == 0) && !userJoined) {
+      printf("publishing...\n");
+      if (send(s, publishMessage, sizeof(publishMessage), 0) == -1) {
+        perror("sendall");
+      }
+      else {
+        printf("Published...\n");
+      }
     }
 
     // Exit logic

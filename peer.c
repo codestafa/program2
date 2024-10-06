@@ -110,7 +110,7 @@ void join(unsigned char *joinMessage, int id) {
   memcpy(&joinMessage[1], &id, 4);
 }
 
-void publish(unsigned char *publishMessage, int id) {
+FileList publish(unsigned char *publishMessage, int id) {
   FileList files = fileCounter();
   memset(publishMessage, 0, 1200);
 
@@ -125,9 +125,10 @@ void publish(unsigned char *publishMessage, int id) {
   for (int i = 0; i < files.fileCount; i++) {
     int nameLength = strlen(files.fileNames[i]) + 1;
     memcpy(&publishMessage[offset], files.fileNames[i], nameLength);
-
     offset += nameLength;
   }
+
+  return files;
 }
 
 void search(unsigned char *searchMessage, int id, char *searchCommand) {
@@ -207,9 +208,9 @@ int main(int argc, char *argv[]) {
     if ((strcmp(userCommand, "PUBLISH") == 0 ||
          strcmp(userCommand, "publish") == 0) &&
         userJoined) {
-      publish(publishMessage, id);
+      FileList files = publish(publishMessage, id);
       printf("publishing...\n");
-      if (send(s, publishMessage, sizeof(publishMessage), 0) == -1) {
+      if (send(s, publishMessage, sizeof(uint8_t) + 4 + 4 * files.fileCount, 0) == -1) {
         perror("sendall");
       } else {
         printf("Published...\n");

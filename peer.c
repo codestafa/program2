@@ -111,6 +111,7 @@ int main(int argc, char *argv[]) {
 
 
   char userCommand[100];
+  char searchCommand[100];
   char *host = argv[1];
   char * port = argv[2];
   char * fileLocation = "SharedFiles";
@@ -141,6 +142,10 @@ int main(int argc, char *argv[]) {
   memcpy(&publishMessage[1], &fileCount_htonl, 4);
   memcpy(&publishMessage[2], &files.fileNames, sizeof(files.fileNames));
 
+  // Search
+  unsigned char* searchMessage = malloc(5);
+  searchMessage[0] = 0x2;
+
 
   if ((s = lookup_and_connect(host, port)) < 0) {
     exit(1);
@@ -167,7 +172,7 @@ int main(int argc, char *argv[]) {
           }
     }
 
-    if ((strcmp(userCommand, "PUBLISH") == 0 || strcmp(userCommand, "publish") == 0) && !userJoined) {
+    if ((strcmp(userCommand, "PUBLISH") == 0 || strcmp(userCommand, "publish") == 0) && userJoined) {
       printf("publishing...\n");
       if (send(s, publishMessage, sizeof(publishMessage), 0) == -1) {
         perror("sendall");
@@ -176,6 +181,26 @@ int main(int argc, char *argv[]) {
         printf("Published...\n");
       }
     }
+
+    if ((strcmp(userCommand, "SEARCH") == 0 || strcmp(userCommand, "search") == 0) && userJoined) {
+      printf("searching...\n");
+
+      // Read the user's search input
+      fgets(searchCommand, sizeof(searchCommand), stdin);
+      searchCommand[strcspn(searchCommand, "\n")] = 0;  // Remove the newline character
+
+      // Copy the searchCommand directly into searchMessage without any control flags
+      strncpy(searchMessage, searchCommand, sizeof(searchMessage) - 1); // Leave space for null terminator
+      searchMessage[sizeof(searchMessage) - 1] = '\0';  // Ensure null termination
+
+      // Send the message (length of searchCommand)
+      if (send(s, searchMessage, sizeof(searchMessage), 0) == -1) {
+        perror("sendall");
+      } else {
+        printf("searching for file... %s\n", searchCommand);  // Print the search command
+      }
+    }
+
 
     // Exit logic
     if (strcmp(userCommand, "EXIT") == 0 || strcmp(userCommand, "exit") == 0) {

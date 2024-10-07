@@ -201,7 +201,7 @@ int main(int argc, char *argv[]) {
     if ((strcmp(userCommand, "SEARCH") == 0 || strcmp(userCommand, "search") == 0) && userJoined) {
       search(searchMessage, searchCommand);
       printf("Searching...\n");
-      if (send(s, searchMessage, sizeof(searchMessage), 0) == -1) {
+      if (send(s, searchMessage, strlen(searchMessage), 0) == -1) {
         perror("send");
       } else {
         printf("Searching for file... %s\n", searchCommand);

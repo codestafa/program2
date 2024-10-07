@@ -1,4 +1,3 @@
-#include <ctype.h>
 #include <dirent.h>
 #include <netdb.h>
 #include <stdbool.h>
@@ -6,20 +5,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
-#include <sys/types.h>
 #include <unistd.h>
-
-// Change printf to getline or more elegant solution
-// Change lower to upper to more elegant solution
-
-#define SERVER_PORT "80"
-#define MAX_LINE 256
 
 /*
  * EECE 446
  * Mustafa Ali
  * Mohsen Amiri
- * Program 1
+ * Program 2
  * Fall 2024
  */
 
@@ -105,12 +97,12 @@ int recvall(int s, char *buf, int len) {
   return total;
 }
 
-void join(unsigned char *joinMessage, int id) {
+void join(char *joinMessage, int id) {
   joinMessage[0] = 0x00;
   memcpy(&joinMessage[1], &id, 4);
 }
 
-FileList publish(unsigned char *publishMessage, int id) {
+FileList publish(char *publishMessage, int id) {
   FileList files = fileCounter();
   publishMessage[0] = 0x1;
 
@@ -129,7 +121,7 @@ FileList publish(unsigned char *publishMessage, int id) {
   return files;
 }
 
-void search(unsigned char *searchMessage, int id, char *searchCommand) {
+void search(char *searchMessage, char *searchCommand) {
   searchMessage[0] = 0x2; // Set the type of message
 
   printf("Enter file name: ");
@@ -165,7 +157,7 @@ int main(int argc, char *argv[]) {
   int id = atoi(argv[3]);
 
   // Join
-  uint32_t net_id = htonl(id); // Convert ID to 4-byte network byte order
+  uint32_t net_id = htonl(id);
   char *joinMessage[5];
 
   // Publish
@@ -216,7 +208,7 @@ int main(int argc, char *argv[]) {
     if ((strcmp(userCommand, "SEARCH") == 0 ||
          strcmp(userCommand, "search") == 0) &&
         userJoined) {
-      search(searchMessage, net_id, searchCommand);
+      search(searchMessage, searchCommand);
       printf("searching...\n");
       // Send the message (length of searchCommand)
       if (send(s, searchMessage, sizeof(searchMessage), 0) == -1) {

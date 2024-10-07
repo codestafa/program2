@@ -112,8 +112,6 @@ void join(unsigned char *joinMessage, int id) {
 
 FileList publish(unsigned char *publishMessage, int id) {
   FileList files = fileCounter();
-  memset(publishMessage, 0, 1200);
-
   publishMessage[0] = 0x1;
 
   memcpy(&publishMessage[1], &id, 4);
@@ -168,16 +166,13 @@ int main(int argc, char *argv[]) {
 
   // Join
   uint32_t net_id = htonl(id); // Convert ID to 4-byte network byte order
-  unsigned char *joinMessage = malloc(5);
-  memset(joinMessage, 0, 5);
+  char *joinMessage[5];
 
   // Publish
-  unsigned char *publishMessage = malloc(1200);
-  memset(publishMessage, 0, 1200);
+  char *publishMessage[1200];
 
   // Search
-  unsigned char *searchMessage = malloc(5);
-  memset(searchMessage, 0, 5);
+  char *searchMessage[5];
 
   if ((s = lookup_and_connect(host, port)) < 0) {
     exit(1);

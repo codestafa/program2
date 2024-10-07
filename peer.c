@@ -119,8 +119,8 @@ void search(char searchMessage[], char *searchCommand) {
   fgets(searchCommand, 100, stdin);
   searchCommand[strcspn(searchCommand, "\n")] = 0; // Remove newline
 
-  strncpy(searchMessage + 1, searchCommand, 99);
-  searchMessage[100 - 1] = '\0'; // Ensure null termination
+  strncpy(searchMessage + 1, searchCommand, sizeof(searchCommand));
+  searchMessage[sizeof(searchCommand) - 1] = '\0'; // Ensure null termination
 }
 
 void freeFileList(FileList files) {

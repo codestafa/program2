@@ -90,20 +90,20 @@ int recvall(int s, char *buf, int len) {
   return total;
 }
 
-void join(char *joinMessage, int id) {
+void join(char joinMessage[], int id) {
   joinMessage[0] = 0x00;
   memcpy(&joinMessage[1], &id, 4);  // Add the ID into the message buffer
 }
 
-FileList publish(char *publishMessage, int id) {
+FileList publish(char publishMessage[], int id) {
   FileList files = fileCounter();
   publishMessage[0] = 0x1;
 
   memcpy(&publishMessage[1], &id, 4);
   uint32_t fileCount_htonl = htonl(files.fileCount);
-  memcpy(&publishMessage[5], &fileCount_htonl, 4);
+  memcpy(publishMessage, &fileCount_htonl, 4);
 
-  int offset = 9; // Starts after the first 5 bytes
+  int offset = 5; // Starts after the first 5 bytes
   for (int i = 0; i < files.fileCount; i++) {
     int nameLength = strlen(files.fileNames[i]) + 1;
     memcpy(&publishMessage[offset], files.fileNames[i], nameLength);
@@ -113,7 +113,7 @@ FileList publish(char *publishMessage, int id) {
   return files;
 }
 
-void search(char *searchMessage, char *searchCommand) {
+void search(char searchMessage[], char *searchCommand) {
   searchMessage[0] = 0x2; // Set the type of message
 
   printf("Enter file name: ");

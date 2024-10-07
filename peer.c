@@ -100,7 +100,7 @@ FileList publish(char publishMessage[], int id) {
   publishMessage[0] = 1;
 
   uint32_t fileCount_htonl = htonl(files.fileCount);
-  memcpy(publishMessage + 4, &fileCount_htonl, 4);
+  memcpy(publishMessage + 1, &fileCount_htonl, 4);
 
   int offset = 5; // Starts after the first 5 bytes
   for (int i = 0; i < files.fileCount; i++) {

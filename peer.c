@@ -92,14 +92,14 @@ int recvall(int s, char *buf, int len) {
 
 void join(char joinMessage[], int id) {
   joinMessage[0] = 0x00;
-  memcpy(&joinMessage[1], &id, 4);  // Add the ID into the message buffer
+  memcpy(joinMessage, &id, 4);  // Add the ID into the message buffer
 }
 
 FileList publish(char publishMessage[], int id) {
   FileList files = fileCounter();
-  publishMessage[0] = 0x1;
+  publishMessage[0] = 1;
 
-  memcpy(&publishMessage[1], &id, 4);
+  memcpy(publishMessage, &id, 4);
   uint32_t fileCount_htonl = htonl(files.fileCount);
   memcpy(publishMessage, &fileCount_htonl, 4);
 
@@ -114,7 +114,7 @@ FileList publish(char publishMessage[], int id) {
 }
 
 void search(char searchMessage[], char *searchCommand) {
-  searchMessage[0] = 0x2; // Set the type of message
+  searchMessage[0] = 2; // Set the type of message
 
   printf("Enter file name: ");
   fgets(searchCommand, 100, stdin);

@@ -128,7 +128,7 @@ void search(char *searchMessage, char *searchCommand) {
   fgets(searchCommand, sizeof(searchCommand), stdin);
   searchCommand[strcspn(searchCommand, "\n")] = 0;
 
-  strncpy(&searchMessage[1], searchCommand, sizeof(searchCommand) - 2);
+  strncpy(&searchMessage[1], searchCommand, 99);
   searchMessage[sizeof(searchCommand) - 1] = '\0';
 
   printf("Command: ");
@@ -183,7 +183,7 @@ int main(int argc, char *argv[]) {
         !userJoined) {
       join(joinMessage, net_id);
       printf("Joining...\n");
-      if (send(s, joinMessage, sizeof(joinMessage), 0) == -1) {
+      if (send(s, joinMessage, 5, 0) == -1) {
         perror("sendall");
       } else {
         printf("Joined...\n");
@@ -211,7 +211,7 @@ int main(int argc, char *argv[]) {
       search(searchMessage, searchCommand);
       printf("searching...\n");
       // Send the message (length of searchCommand)
-      if (send(s, searchMessage, sizeof(searchMessage), 0) == -1) {
+      if (send(s, searchMessage, 100, 0) == -1) {
         perror("sendall");
       } else {
         printf("searching for file... %s\n",

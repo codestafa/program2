@@ -92,7 +92,7 @@ int recvall(int s, char *buf, int len) {
 
 void join(char joinMessage[], int id) {
   joinMessage[0] = 0x00;
-  memcpy(joinMessage, &id, 4);  // Add the ID into the message buffer
+  memcpy(joinMessage + 1, &id, 4);  // Add the ID into the message buffer
 }
 
 FileList publish(char publishMessage[], int id) {
@@ -148,13 +148,13 @@ int main(int argc, char *argv[]) {
 
   // Join
   uint32_t net_id = htonl(id);
-  char joinMessage[5] = {0};    // Properly sized
+  char joinMessage[5];
 
   // Publish
-  char publishMessage[1200] = {0};   // Properly sized
+  char publishMessage[1200];
 
   // Search
-  char searchMessage[100] = {0};   // Properly sized
+  char searchMessage[100];   // Properly sized
 
   if ((s = lookup_and_connect(host, port)) < 0) {
     exit(1);

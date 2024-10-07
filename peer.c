@@ -106,7 +106,7 @@ FileList publish(char publishMessage[], int id) {
   int offset = 5; // Starts after the first 5 bytes
   for (int i = 0; i < files.fileCount; i++) {
     int nameLength = strlen(files.fileNames[i]) + 1;
-    memcpy(&publishMessage[offset], files.fileNames[i], nameLength);
+    memcpy(publishMessage + offset, files.fileNames[i], nameLength);
     offset += nameLength;
   }
 
@@ -120,7 +120,7 @@ void search(char searchMessage[], char *searchCommand) {
   fgets(searchCommand, 100, stdin);
   searchCommand[strcspn(searchCommand, "\n")] = 0; // Remove newline
 
-  strncpy(&searchMessage[1], searchCommand, 99);
+  strncpy(searchMessage + 1, searchCommand, 99);
   searchMessage[100 - 1] = '\0'; // Ensure null termination
 }
 

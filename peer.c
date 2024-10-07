@@ -119,7 +119,7 @@ void search(char searchMessage[], char *searchCommand) {
   fgets(searchCommand, 100, stdin);
   searchCommand[strcspn(searchCommand, "\n")] = 0; // Remove newline
 
-  strncpy(searchMessage + 1, searchCommand, strlen(searchCommand) + 1);
+  memcpy(searchMessage + 1, searchCommand, strlen(searchCommand) + 1);
 }
 
 

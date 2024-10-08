@@ -90,7 +90,7 @@ int recvall(int s, char *buf, int len) {
   return total;
 }
 
-void join(char joinMessage[], int id) {
+void join(char joinMessage[], int id, int messageSize) {
   joinMessage[0] = 0x00;  // Set the first byte to 0x00 (JOIN action)
 
   // Convert the ID to network byte order and copy it into the message
@@ -99,8 +99,8 @@ void join(char joinMessage[], int id) {
 
   // Print the hex representation of the message
   printf("Hex representation of joinMessage: ");
-  printf("%d, %d", strlen(joinMessage), sizeof (joinMessage));
-  for (int i = 0; i < strlen(joinMessage); i++) {  // Always 5 bytes for JOIN message
+  printf("Message length: %d\n", messageSize);
+  for (int i = 0; i < messageSize; i++) {  // Loop over the actual size (5 bytes)
     printf("0x%02x ", (unsigned char)joinMessage[i]);
   }
   printf("\n");
@@ -195,7 +195,7 @@ int main(int argc, char *argv[]) {
 
     // Join logic
     if ((strcmp(userCommand, "JOIN") == 0 || strcmp(userCommand, "join") == 0) && !userJoined) {
-      join(joinMessage, id);
+      join(joinMessage, id, sizeof(joinMessage));
       printf("Joining...\n");
       if (send(s, joinMessage, sizeof(joinMessage), 0) == -1) {
         perror("send");

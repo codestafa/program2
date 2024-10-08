@@ -172,9 +172,10 @@ int main(int argc, char *argv[]) {
     userCommand[strcspn(userCommand, "\n")] = 0; // Remove newline
 
     // Exit condition
-    if (strcmp(userCommand, "exit") == 0) {
-      close(s);
-      exit(1);
+    if ((strcmp(userCommand, "EXIT") == 0 || strcmp(userCommand, "exit") == 0)) {
+      printf("Exiting the program...\n");
+      close(s); // Close the socket connection
+      break;
     }
 
     // Join logic

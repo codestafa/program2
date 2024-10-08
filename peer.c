@@ -65,12 +65,13 @@ FileList fileCounter(void) {
 
   // Print the number of files found
   printf("File count: %d\n", count);
-
+  unsigned int bitcount = 0;
   // Print the hex representation of file names
   printf("Hex representation of files:\n");
   for (int i = 0; i < count; i++) {
-      printf("%d ", sizeof(charArr));
+      bitcount = bitcount + strlen(charArr[i]);
     }
+    printf("%d ", bitcount);
     printf("\n");
 
 

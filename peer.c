@@ -208,7 +208,10 @@ int main(int argc, char *argv[]) {
         perror("send");
       } else {
         int recvIt = recvall(s, searchResponse, sizeof(searchResponse) - 1);
-        if (recvIt > 0) {
+        int count = 0;
+        printf("recvit number %d, %d", count++, recvIt);
+        while (recvIt > 0) {
+          printf("recvit number %d, %d", count++, recvIt);
           searchResponse[recvIt] = '\0'; // Null-terminate the response
 
           uint32_t peerID;

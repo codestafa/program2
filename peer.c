@@ -238,8 +238,6 @@ int main(int argc, char *argv[]) {
           } else {
             printf("File not found.\n");
           }
-        } else {
-          printf("Error receiving search response.\n");
         }
       }
     }

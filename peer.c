@@ -93,6 +93,10 @@ int recvall(int s, char *buf, int len) {
 void join(char joinMessage[], int id) {
   joinMessage[0] = 0x00;
   memcpy(joinMessage + 1, &id, 4);  // Add the ID into the message buffer
+  printf("Hex representation of publishMessage: ");
+  for (int i = 0; i <= strlen(joinMessage); i++) {
+    printf("0x%02x ", (unsigned char)joinMessage[i]);
+  }
 }
 
 FileList publish(char publishMessage[], int id) {
@@ -108,6 +112,11 @@ FileList publish(char publishMessage[], int id) {
     memcpy(publishMessage + offset, files.fileNames[i], nameLength);
     offset += nameLength;
   }
+  printf("Hex representation of publishMessage: ");
+  for (int i = 0; i <= strlen(publishMessage); i++) {
+    printf("0x%02x ", (unsigned char)publishMessage[i]);
+  }
+  printf("\n");
 
   return files;
 }
@@ -123,7 +132,7 @@ void search(char searchMessage[], char *searchCommand) {
   memcpy(searchMessage + 1, searchCommand, strlen(searchCommand) + 1);
 
   printf("Hex representation of searchMessage: ");
-  for (int i = 0; i <= strlen(searchCommand); i++) {
+  for (int i = 0; i <= strlen(searchMessage); i++) {
     printf("0x%02x ", (unsigned char)searchMessage[i]);
   }
   printf("\n");

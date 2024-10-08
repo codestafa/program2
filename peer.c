@@ -212,37 +212,38 @@ int main(int argc, char *argv[]) {
         perror("send");
       } else {
         printf("Searching for file... %s\n", searchCommand);
-        searchMessage//        if (recvIt == 0) {
-//          // Extract the peer ID
-//          uint32_t peerID;
-//          memcpy(&peerID, &searchResponse[0], 4);
-//          peerID = ntohl(peerID);  // Convert from network byte order to host byte order
-//
-//          // Extract the IPv4 address
-//          uint32_t ipAddress;
-//          memcpy(&ipAddress, &searchResponse[4], 4);
-//          ipAddress = ntohl(ipAddress);  // Convert to host byte order
-//
-//          // Extract the port number
-//          uint16_t port;
-//          memcpy(&port, &searchResponse[8], 2);
-//          port = ntohs(port);  // Convert to host byte order
-//
-//          if (peerID != 0) {
-//            printf("File found at:\n");
-//            printf("Peer %u\n", peerID);
-//            printf("IP Address: %u.%u.%u.%u\n",
-//                   (ipAddress >> 24) & 0xFF,
-//                   (ipAddress >> 16) & 0xFF,
-//                   (ipAddress >> 8) & 0xFF,
-//                   ipAddress & 0xFF);
-//            printf(":%u\n", port);
-//          } else {
-//            printf("File not found.\n");
-//          }
-//        } else {
-//          printf("Error receiving search response.\n");
-//        }
+        int recvIt = recvall(s, searchResponse, strlen(searchResponse));
+        if (recvIt == 0) {
+          // Extract the peer ID
+          uint32_t peerID;
+          memcpy(&peerID, &searchResponse[0], 4);
+          peerID = ntohl(peerID);  // Convert from network byte order to host byte order
+
+          // Extract the IPv4 address
+          uint32_t ipAddress;
+          memcpy(&ipAddress, &searchResponse[4], 4);
+          ipAddress = ntohl(ipAddress);  // Convert to host byte order
+
+          // Extract the port number
+          uint16_t port;
+          memcpy(&port, &searchResponse[8], 2);
+          port = ntohs(port);  // Convert to host byte order
+
+          if (peerID != 0) {
+            printf("File found at:\n");
+            printf("Peer %u\n", peerID);
+            printf("IP Address: %u.%u.%u.%u\n",
+                   (ipAddress >> 24) & 0xFF,
+                   (ipAddress >> 16) & 0xFF,
+                   (ipAddress >> 8) & 0xFF,
+                   ipAddress & 0xFF);
+            printf(":%u\n", port);
+          } else {
+            printf("File not found.\n");
+          }
+        } else {
+          printf("Error receiving search response.\n");
+        }
       }
     }
   }

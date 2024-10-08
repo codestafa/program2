@@ -212,10 +212,6 @@ int main(int argc, char *argv[]) {
       } else {
         printf("Searching for file... %s\n", searchCommand);
         int recvIt = recvall(s, searchResponse, 10);
-        while ((recvIt > 0)) {
-          recvIt = recvall(s, searchResponse, 10);
-          printf("%d", recvIt);
-        }
         if (recvIt == 0) {
           // Extract the peer ID
           uint32_t peerID;

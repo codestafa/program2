@@ -20,7 +20,7 @@ FileList fileCounter(void) {
   DIR *dir;
   struct dirent *entry;
   char *dirName = "./SharedFiles"; // Directory to scan
-  int count = 0;
+//  int count = 0;
   int maxFiles = 100; // Set a maximum number of files to track
   char **charArr = malloc(maxFiles * sizeof(char *)); // Allocate memory for the array of strings
 

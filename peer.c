@@ -119,9 +119,16 @@ void search(char searchMessage[], char *searchCommand) {
   fgets(searchCommand, 100, stdin);
   searchCommand[strcspn(searchCommand, "\n")] = 0;
 
-  // Copy the file name into searchMessage, starting from the second byte
   memcpy(searchMessage + 1, searchCommand, strlen(searchCommand) + 1);
+
+  printf("Hex representation of searchCommand: ");
+  for (int i = 0; i <= strlen(searchCommand); i++) {
+    printf("0x%02x ", (unsigned char)searchCommand[i]);
+  }
+  printf("\n");
 }
+
+
 void freeFileList(FileList files) {
   for (int i = 0; i < files.fileCount; i++) {
     free(files.fileNames[i]);
@@ -205,6 +212,7 @@ int main(int argc, char *argv[]) {
       } else {
         printf("Searching for file... %s\n", searchCommand);
         int recvIt = recvall(s, searchResponse, sizeof(searchResponse));
+        printf("%d", recvIt);
         if (recvIt) {
           // Extract the peer ID
           uint32_t peerID;

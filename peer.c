@@ -20,7 +20,7 @@ FileList fileCounter(void) {
   DIR *dir;
   struct dirent *entry;
   char *dirName = "./SharedFiles"; // Directory to scan
-//  int count = 0;
+  int count = 0;
   int maxFiles = 100; // Set a maximum number of files to track
   char **charArr = malloc(maxFiles * sizeof(char *)); // Allocate memory for the array of strings
 
@@ -75,20 +75,6 @@ FileList fileCounter(void) {
   return result;
 }
 
-int recvall(int s, char *buf, int len) {
-  int total = 0;
-  int bytesleft = len;
-  int n;
-  while (total < len) {
-    n = recv(s, buf + total, bytesleft, 0);
-    if (n <= 0) {
-      break;
-    }
-    total += n;
-    bytesleft -= n;
-  }
-  return total;
-}
 
 void join(char joinMessage[], int id, int messageSize) {
   joinMessage[0] = 0x00; // Set first byte to JOIN action
@@ -208,7 +194,7 @@ int main(int argc, char *argv[]) {
         perror("send");
       } else {
         int recvIt = recv(s, searchResponse, 10,0);
-        int count = 0;
+//        int count = 0;
 //        printf("recvit number %d, %d", count++, recvIt);
         if (recvIt > 0) {
 //          printf("recvit number %d, %d", count++, recvIt);

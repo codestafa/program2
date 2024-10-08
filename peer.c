@@ -113,17 +113,20 @@ FileList publish(char publishMessage[], int id) {
 }
 
 void search(char searchMessage[], char *searchCommand) {
+  // Set the first byte of searchMessage to 0x2
   searchMessage[0] = 0x2;
 
   printf("Enter file name to search: ");
   fgets(searchCommand, 100, stdin);
-  searchCommand[strcspn(searchCommand, "\n")] = 0;
+  searchCommand[strcspn(searchCommand, "\n")] = 0; // Remove the newline character
 
+  // Copy the file name into searchMessage, starting from the second byte
   memcpy(searchMessage + 1, searchCommand, strlen(searchCommand) + 1);
 
-  printf("Hex representation of searchCommand: ");
+  // Print each byte of searchMessage in hexadecimal format
+  printf("Hex representation of searchMessage: ");
   for (int i = 0; i <= strlen(searchCommand); i++) {
-    printf("0x%02x ", (unsigned char)searchCommand[i]);
+    printf("0x%02x ", (unsigned char)searchMessage[i]);
   }
   printf("\n");
 }

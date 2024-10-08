@@ -91,12 +91,16 @@ int recvall(int s, char *buf, int len) {
 }
 
 void join(char joinMessage[], int id) {
-  joinMessage[0] = 0x00;  // Set the first byte to 0x00
-  memcpy(joinMessage + 1, &id, 4);  // Add the ID into the message buffer
+  joinMessage[0] = 0x00;  // Set the first byte to 0x00 (JOIN action)
 
+  // Convert the ID to network byte order and copy it into the message
+  uint32_t net_id = htonl(id);  // Ensure ID is in network byte order
+  memcpy(joinMessage + 1, &net_id, sizeof(net_id));  // Copy the 4-byte ID
+
+  // Print the hex representation of the message
   printf("Hex representation of joinMessage: ");
-  for (int i = 0; i < sizeof(joinMessage); i++) {  // Use sizeof to loop over the message
-    printf("0x%02x ", (unsigned char)joinMessage[i]);  // Print each byte in hex
+  for (int i = 0; i < 5; i++) {  // Always 5 bytes for JOIN message
+    printf("0x%02x ", (unsigned char)joinMessage[i]);
   }
   printf("\n");
 }
@@ -164,7 +168,6 @@ int main(int argc, char *argv[]) {
   int id = atoi(argv[3]);
 
   // Join
-  uint32_t net_id = htonl(id);
   char joinMessage[5];
 
   // Publish
@@ -191,7 +194,7 @@ int main(int argc, char *argv[]) {
 
     // Join logic
     if ((strcmp(userCommand, "JOIN") == 0 || strcmp(userCommand, "join") == 0) && !userJoined) {
-      join(joinMessage, net_id);
+      join(joinMessage, id);
       printf("Joining...\n");
       if (send(s, joinMessage, sizeof(joinMessage), 0) == -1) {
         perror("send");

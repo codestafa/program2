@@ -117,6 +117,7 @@ void search(char searchMessage[], char *searchCommand) {
 
   printf("Enter file name to search: ");
   fgets(searchCommand, 100, stdin);
+  searchCommand[strcspn(searchCommand, "\n")] = 0;
   searchCommand[strlen(searchCommand)] = '\0';
 
   memcpy(searchMessage + 1, searchCommand, strlen(searchCommand) + 1);
@@ -211,8 +212,7 @@ int main(int argc, char *argv[]) {
         perror("send");
       } else {
         printf("Searching for file... %s\n", searchCommand);
-//        recvall(s, searchResponse, strlen(searchResponse));
-//        if (recvIt == 0) {
+        searchMessage//        if (recvIt == 0) {
 //          // Extract the peer ID
 //          uint32_t peerID;
 //          memcpy(&peerID, &searchResponse[0], 4);

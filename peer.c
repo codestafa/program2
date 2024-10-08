@@ -211,7 +211,7 @@ int main(int argc, char *argv[]) {
         perror("send");
       } else {
         printf("Searching for file... %s\n", searchCommand);
-        recvall(s, searchResponse, 10);
+        recvall(s, searchResponse, strlen(searchResponse));
 //        if (recvIt == 0) {
 //          // Extract the peer ID
 //          uint32_t peerID;

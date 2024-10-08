@@ -210,6 +210,8 @@ int main(int argc, char *argv[]) {
       if (send(s, searchMessage, strlen(searchMessage), 0) == -1) {
         perror("send");
       } else {
+        printf("%d %d\n", strlen(searchMessage), sizeof(searchMessage));
+
         printf("Searching for file... %s\n", searchCommand);
         recvall(s, searchResponse, strlen(searchResponse));
 //        if (recvIt == 0) {

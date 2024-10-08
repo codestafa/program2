@@ -112,16 +112,15 @@ FileList publish(char publishMessage[], int id) {
   return files;
 }
 
-void search(char searchMessage[], char *searchCommand) {
+void search(char searchMessage[], char *searchCommand, size_t bufferSize) {
   searchMessage[0] = 2; // Set the type of message
 
   printf("Enter file name: ");
-  fgets(searchCommand, 100, stdin);
+  fgets(searchCommand, 100, stdin);  // Reads up to bufferSize-1 characters
   searchCommand[strcspn(searchCommand, "\n")] = 0; // Remove newline
 
   memcpy(searchMessage + 1, searchCommand, strlen(searchCommand) + 1);
 }
-
 
 void freeFileList(FileList files) {
   for (int i = 0; i < files.fileCount; i++) {

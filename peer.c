@@ -69,7 +69,8 @@ FileList fileCounter(void) {
   // Print the hex representation of file names
   printf("Hex representation of files:\n");
   for (int i = 0; i < count; i++) {
-      printf("0x%02x ", (unsigned char)charArr[i]);
+      printf("%s ", sizeof(charArr[i]));
+      printf("%s ", charArr[i]);
     }
     printf("\n");
 

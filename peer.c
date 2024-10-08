@@ -211,9 +211,9 @@ int main(int argc, char *argv[]) {
         perror("send");
       } else {
         printf("Searching for file... %s\n", searchCommand);
-        int recvIt = recvall(s, searchResponse, sizeof(searchResponse));
+        int recvIt = recvall(s, searchResponse, 10);
         while ((recvIt > 0)) {
-          recvIt = recvall(s, searchResponse, sizeof(searchResponse));
+          recvIt = recvall(s, searchResponse, 10);
           printf("%d", recvIt);
         }
         if (recvIt == 0) {

@@ -213,7 +213,7 @@ int main(int argc, char *argv[]) {
         printf("Searching for file... %s\n", searchCommand);
         int recvIt = recvall(s, searchResponse, sizeof(searchResponse));
         while ((recvIt > 0)) {
-          recvIt = recvall(s, searchResponse, sizeof(searchResponse);
+          recvIt = recvall(s, searchResponse, sizeof(searchResponse));
           printf("%d", recvIt);
         }
         if (recvIt == 0) {

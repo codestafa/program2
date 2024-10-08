@@ -174,7 +174,7 @@ int main(int argc, char *argv[]) {
     // Exit condition
     if (strcmp(userCommand, "exit") == 0) {
       close(s);
-      break;
+      exit(1);
     }
 
     // Join logic

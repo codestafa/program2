@@ -63,10 +63,17 @@ FileList fileCounter(void) {
     }
   }
 
-  printf("Hex representation of files: ");
-  printf("the file count is %d", count);
-  for (int i = 0; i < count; i++) {  // Loop over the actual size (5 bytes)
-    printf("0x%02x ", charArr[i]);
+  // Print the number of files found
+  printf("File count: %d\n", count);
+
+  // Print the hex representation of file names
+  printf("Hex representation of files:\n");
+  for (int i = 0; i < count; i++) {
+    printf("File %d (%s): ", i + 1, charArr[i]);
+    for (int j = 0; j < strlen(charArr[i]); j++) {
+      printf("0x%02x ", (unsigned char)charArr[i][j]);
+    }
+    printf("\n");
   }
 
   // Close the directory stream

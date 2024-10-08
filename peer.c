@@ -159,7 +159,7 @@ int main(int argc, char *argv[]) {
 
   // Publish
   FileList files = fileCounter();
-  char publishMessage[files.bitCount + 5];
+  char publishMessage[files.bitCount];
 
   // Search
   char searchMessage[100];
@@ -190,7 +190,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (strcmp(userCommand, "PUBLISH") == 0 && userJoined) {
-      int publishSize = files.bitCount + 5;
+      int publishSize = files.bitCount;
       publish(publishMessage, id, publishSize, files);
       if (send(s, publishMessage, publishSize, 0) == -1) {
         perror("send");

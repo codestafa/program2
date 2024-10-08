@@ -121,6 +121,11 @@ void search(char searchMessage[], char *searchCommand) {
 
   memcpy(searchMessage + 1, searchCommand, strlen(searchCommand) + 1);
 
+  printf("Hex representation of searchMessage: ");
+  for (int i = 0; i <= strlen(searchCommand); i++) {
+    printf("0x%02x ", (unsigned char)searchMessage[i]);
+  }
+  printf("\n");
 }
 
 

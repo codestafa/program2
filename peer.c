@@ -99,6 +99,7 @@ void join(char joinMessage[], int id) {
 
   // Print the hex representation of the message
   printf("Hex representation of joinMessage: ");
+  printf("%d, %d", strlen(joinMessage), sizeof (joinMessage));
   for (int i = 0; i < strlen(joinMessage); i++) {  // Always 5 bytes for JOIN message
     printf("0x%02x ", (unsigned char)joinMessage[i]);
   }

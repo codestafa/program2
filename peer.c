@@ -117,7 +117,7 @@ void search(char searchMessage[], char *searchCommand) {
 
   printf("Enter file name to search: ");
   fgets(searchCommand, 100, stdin);
-  searchCommand[strcspn(searchCommand, "\n")] = 0;
+  searchCommand[strlen(searchCommand)] = '\0';
 
   memcpy(searchMessage + 1, searchCommand, strlen(searchCommand) + 1);
 

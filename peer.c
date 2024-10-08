@@ -166,7 +166,7 @@ int main(int argc, char *argv[]) {
     fgets(userCommand, sizeof(userCommand), stdin);
     userCommand[strcspn(userCommand, "\n")] = 0; // Remove newline
 
-    if (strcmp(userCommand, "exit") == 0) {
+    if (strcmp(userCommand, "EXIT") == 0) {
       printf("Exiting...\n");
       close(s);
       break;

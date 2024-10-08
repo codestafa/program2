@@ -65,7 +65,7 @@ FileList fileCounter(void) {
   FileList result;
   result.fileNames = charArr;
   result.fileCount = count;
-  result.bitCount = bitCount + 1;
+  result.bitCount = bitCount;
   return result;
 }
 

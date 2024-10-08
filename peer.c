@@ -169,7 +169,7 @@ int main(int argc, char *argv[]) {
 
   // Search
   char searchMessage[100];
-  char searchResponse[1024]; // Increase buffer size for search response
+  char searchResponse[10]; // Increase buffer size for search response
 
   if ((s = lookup_and_connect(host, port)) < 0) {
     exit(1);
@@ -207,7 +207,7 @@ int main(int argc, char *argv[]) {
       if (send(s, searchMessage, strlen(searchMessage) + 1, 0) == -1) {
         perror("send");
       } else {
-        int recvIt = recvall(s, searchResponse, sizeof(searchResponse) - 1);
+        int recvIt = recvall(s, searchResponse, 10);
         int count = 0;
         printf("recvit number %d, %d", count++, recvIt);
         while (recvIt > 0) {

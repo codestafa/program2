@@ -59,12 +59,12 @@ FileList fileCounter(void) {
   unsigned int bitCount = 0;
   for (int i = 0; i < count; i++) {
    // printf("stlen %d \n", strlen(charArr[i]));
-    printf("count %d \n", count);
+//    printf("count %d \n", count);
     bitCount += strlen(charArr[i]); // Include string length + null terminator
   }
-  printf("bitcount %d \n", bitCount);
+//  printf("bitcount %d \n", bitCount);
   bitCount += count;
-  printf("bitcount %d \n", bitCount);
+//  printf("bitcount %d \n", bitCount);
 
   closedir(dir);
 
@@ -95,11 +95,11 @@ void join(char joinMessage[], int id, int messageSize) {
   uint32_t net_id = htonl(id); // Convert ID to network byte order
   memcpy(joinMessage + 1, &net_id, 4); // Copy the 4-byte ID
 
-  printf("Hex representation of joinMessage: ");
-  for (int i = 0; i < messageSize; i++) {
-    printf("0x%02x ", (unsigned char)joinMessage[i]);
-  }
-  printf("\n");
+//  printf("Hex representation of joinMessage: ");
+//  for (int i = 0; i < messageSize; i++) {
+//    printf("0x%02x ", (unsigned char)joinMessage[i]);
+//  }
+//  printf("\n");
 }
 
 FileList publish(char publishMessage[], int id, int messageSize, FileList files) {
@@ -115,11 +115,11 @@ FileList publish(char publishMessage[], int id, int messageSize, FileList files)
     offset += nameLength;
   }
 
-  printf("Hex representation of publishMessage: ");
-  for (int i = 0; i < messageSize; i++) {
-    printf("0x%02x ", (unsigned char)publishMessage[i]);
-  }
-  printf("\n");
+//  printf("Hex representation of publishMessage: ");
+//  for (int i = 0; i < messageSize; i++) {
+//    printf("0x%02x ", (unsigned char)publishMessage[i]);
+//  }
+//  printf("\n");
 
   return files;
 }
@@ -132,11 +132,11 @@ void search(char searchMessage[], char *searchCommand) {
 
   memcpy(searchMessage + 1, searchCommand, strlen(searchCommand) + 1);
 
-  printf("Hex representation of searchMessage: ");
-  for (int i = 0; i < strlen(searchMessage) + 1; i++) {
-    printf("0x%02x ", (unsigned char)searchMessage[i]);
-  }
-  printf("\n");
+//  printf("Hex representation of searchMessage: ");
+//  for (int i = 0; i < strlen(searchMessage) + 1; i++) {
+//    printf("0x%02x ", (unsigned char)searchMessage[i]);
+//  }
+//  printf("\n");
 }
 
 void freeFileList(FileList files) {
@@ -209,9 +209,9 @@ int main(int argc, char *argv[]) {
       } else {
         int recvIt = recv(s, searchResponse, 10,0);
         int count = 0;
-        printf("recvit number %d, %d", count++, recvIt);
+//        printf("recvit number %d, %d", count++, recvIt);
         if (recvIt > 0) {
-          printf("recvit number %d, %d", count++, recvIt);
+//          printf("recvit number %d, %d", count++, recvIt);
           searchResponse[recvIt] = '\0'; // Null-terminate the response
 
           uint32_t peerID;
@@ -228,15 +228,15 @@ int main(int argc, char *argv[]) {
 
           if (peerID != 0) {
             printf("File found at:\n");
-            printf("Peer %u\n", peerID);
-            printf("IP Address: %u.%u.%u.%u\n",
+            printf("  Peer %u\n", peerID);
+            printf("  %u.%u.%u.%u\n",
                    (ipAddress >> 24) & 0xFF,
                    (ipAddress >> 16) & 0xFF,
                    (ipAddress >> 8) & 0xFF,
                    ipAddress & 0xFF);
-            printf("Port: %u\n", port);
+            printf(":%u\n", port);
           } else {
-            printf("File not found.\n");
+            printf("  File not found.\n");
           }
         }
       }

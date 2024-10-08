@@ -106,7 +106,7 @@ void join(char joinMessage[], int id, int messageSize) {
   printf("\n");
 }
 
-FileList publish(char publishMessage[], int id) {
+FileList publish(char publishMessage[], int id, int messageSize) {
   FileList files = fileCounter();
   publishMessage[0] = 1;
 
@@ -120,7 +120,7 @@ FileList publish(char publishMessage[], int id) {
     offset += nameLength;
   }
   printf("Hex representation of publishMessage: ");
-  for (int i = 0; i <= strlen(publishMessage); i++) {
+  for (int i = 0; i < messageSize; i++) {
     printf("0x%02x ", (unsigned char)publishMessage[i]);
   }
   printf("\n");
@@ -207,7 +207,7 @@ int main(int argc, char *argv[]) {
 
     // Publish logic
     if ((strcmp(userCommand, "PUBLISH") == 0 || strcmp(userCommand, "publish") == 0) && userJoined) {
-      FileList files = publish(publishMessage, id);
+      FileList files = publish(publishMessage, id, sizeof(publishMessage));
       printf("Publishing...\n");
       int publishSize = 9; // Start with fixed header size
       for (int i = 0; i < files.fileCount; i++) {

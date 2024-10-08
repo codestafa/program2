@@ -185,7 +185,8 @@ int main(int argc, char *argv[]) {
 
   // Publish
   FileList files = fileCounter();
-  char publishMessage[files.bitCount];
+  // adding 5 for the first few bits
+  char publishMessage[files.bitCount + 5];
 
   // Search
   char searchMessage[100];   // Properly sized
@@ -220,7 +221,7 @@ int main(int argc, char *argv[]) {
 
     // Publish logic
     if ((strcmp(userCommand, "PUBLISH") == 0 || strcmp(userCommand, "publish") == 0) && userJoined) {
-      publish(publishMessage, id, sizeof(publishMessage), files);
+      publish(publishMessage, id, files.fileCount + 5, files);
       printf("Publishing...\n");
       int publishSize = 9; // Start with fixed header size
       for (int i = 0; i < files.fileCount; i++) {

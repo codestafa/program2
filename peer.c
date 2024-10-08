@@ -115,10 +115,10 @@ FileList publish(char publishMessage[], int id) {
 void search(char searchMessage[], char *searchCommand) {
   searchMessage[0] = 2; // Set the type of message
 
-  printf("Enter file name: ");
-  fgets(searchCommand, 100, stdin);  // Reads up to bufferSize-1 characters
-  searchCommand[strcspn(searchCommand, "\n")] = 0; // Remove newline
-
+//  printf("Enter file name: ");
+//  fgets(searchCommand, 100, stdin);  // Reads up to bufferSize-1 characters
+//  searchCommand[strcspn(searchCommand, "\n")] = 0; // Remove newline
+  searchCommand="test.txt\n";
   memcpy(searchMessage + 1, searchCommand, strlen(searchCommand) + 1);
 }
 

@@ -207,7 +207,7 @@ int main(int argc, char *argv[]) {
       if (send(s, searchMessage, strlen(searchMessage) + 1, 0) == -1) {
         perror("send");
       } else {
-        int recvIt = recvall(s, searchResponse, 10);
+        int recvIt = recv(s, searchResponse, 10,0);
         int count = 0;
         printf("recvit number %d, %d", count++, recvIt);
         if (recvIt > 0) {

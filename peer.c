@@ -173,6 +173,7 @@ int main(int argc, char *argv[]) {
 
     // Exit condition
     if (strcmp(userCommand, "exit") == 0) {
+      close(s);
       break;
     }
 
@@ -283,7 +284,6 @@ int lookup_and_connect(const char *host, const char *service) {
       break;
     }
 
-    close(s);
   }
   if (rp == NULL) {
     perror("stream-talk-client: connect");

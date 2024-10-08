@@ -39,7 +39,7 @@ FileList fileCounter(void) {
   // Loop through directory entries
   while ((entry = readdir(dir)) != NULL && count < maxFiles) {
     if (entry->d_type == DT_REG) { // Only regular files
-      charArr[count] = malloc(strlen(entry->d_name) + 1);
+//      charArr[count] = malloc(strlen(entry->d_name) + 1); // +1 for null terminator
       if (!charArr[count]) {
         perror("malloc");
         for (int i = 0; i < count; i++) {
@@ -49,7 +49,7 @@ FileList fileCounter(void) {
         closedir(dir);
         exit(EXIT_FAILURE);
       }
-      strcpy(charArr[count], entry->d_name);
+      strcpy(charArr[count], entry->d_name); // This copies the name, including the null terminator
       count++;
     }
   }

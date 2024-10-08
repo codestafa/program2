@@ -190,9 +190,8 @@ int main(int argc, char *argv[]) {
     }
 
     if (strcmp(userCommand, "PUBLISH") == 0 && userJoined) {
-      int publishSize = files.bitCount;
-      publish(publishMessage, id, publishSize, files);
-      if (send(s, publishMessage, publishSize, 0) == -1) {
+      publish(publishMessage, id, strlen(publishMessage), files);
+      if (send(s, publishMessage, strlen(publishMessage), 0) == -1) {
         perror("send");
       }
     }

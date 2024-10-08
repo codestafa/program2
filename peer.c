@@ -66,7 +66,7 @@ FileList fileCounter(void) {
   printf("Hex representation of files: ");
   printf("the file count is %d", count);
   for (int i = 0; i < count; i++) {  // Loop over the actual size (5 bytes)
-    printf("%s ", charArr[i]);
+    printf("0x%02x ", charArr[i]);
   }
 
   // Close the directory stream

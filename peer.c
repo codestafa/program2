@@ -56,7 +56,7 @@ FileList fileCounter(void) {
 
   unsigned int bitCount = 0;
   for (int i = 0; i < count; i++) {
-    bitCount += strlen(charArr[i]) + 1; // Include string length + null terminator
+    bitCount += strlen(charArr[i]); // Include string length + null terminator
   }
   bitCount += count;
 

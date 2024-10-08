@@ -20,6 +20,7 @@ int lookup_and_connect(const char *host, const char *service);
 typedef struct {
   char **fileNames; // Array of file names
   int fileCount;    // Number of files found
+  int bitCount;
 } FileList;
 
 FileList fileCounter(void) {
@@ -71,7 +72,7 @@ FileList fileCounter(void) {
   for (int i = 0; i < count; i++) {
       bitcount = bitcount + strlen(charArr[i]);
     }
-    printf("%d ", bitcount);
+    bitcount = bitcount + count - 1;
     printf("\n");
 
 
@@ -82,7 +83,7 @@ FileList fileCounter(void) {
   FileList result;
   result.fileNames = charArr;
   result.fileCount = count;
-
+  result.bitCount = bitcount;
   return result;
 }
 
@@ -118,8 +119,7 @@ void join(char joinMessage[], int id, int messageSize) {
   printf("\n");
 }
 
-FileList publish(char publishMessage[], int id, int messageSize) {
-  FileList files = fileCounter();
+FileList publish(char publishMessage[], int id, int messageSize, FileList files) {
   publishMessage[0] = 1;
 
   uint32_t fileCount_htonl = htonl(files.fileCount);
@@ -184,7 +184,8 @@ int main(int argc, char *argv[]) {
   char joinMessage[5];
 
   // Publish
-  char publishMessage[1200];
+  FileList files = fileCounter();
+  char publishMessage[files.bitCount];
 
   // Search
   char searchMessage[100];   // Properly sized
@@ -219,7 +220,7 @@ int main(int argc, char *argv[]) {
 
     // Publish logic
     if ((strcmp(userCommand, "PUBLISH") == 0 || strcmp(userCommand, "publish") == 0) && userJoined) {
-      FileList files = publish(publishMessage, id, sizeof(publishMessage));
+      publish(publishMessage, id, sizeof(publishMessage), files);
       printf("Publishing...\n");
       int publishSize = 9; // Start with fixed header size
       for (int i = 0; i < files.fileCount; i++) {

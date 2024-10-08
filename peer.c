@@ -62,7 +62,9 @@ FileList fileCounter(void) {
     printf("count %d \n", count);
     bitCount += strlen(charArr[i]); // Include string length + null terminator
   }
+  printf("bitcount %d \n", bitCount);
   bitCount += count;
+  printf("bitcount %d \n", bitCount);
 
   closedir(dir);
 
@@ -163,7 +165,7 @@ int main(int argc, char *argv[]) {
 
   // Publish
   FileList files = fileCounter();
-  char publishMessage[files.bitCount];
+  char publishMessage[files.bitCount + 5];
 
   // Search
   char searchMessage[100];
@@ -194,9 +196,8 @@ int main(int argc, char *argv[]) {
     }
 
     if (strcmp(userCommand, "PUBLISH") == 0 && userJoined) {
-      int publishSize = files.bitCount;
-      publish(publishMessage, id, publishSize, files);
-      if (send(s, publishMessage, publishSize, 0) == -1) {
+      publish(publishMessage, id, files.bitCount + 5, files);
+      if (send(s, publishMessage, files.bitCount + 5, 0) == -1) {
         perror("send");
       }
     }

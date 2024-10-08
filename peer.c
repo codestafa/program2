@@ -113,13 +113,15 @@ FileList publish(char publishMessage[], int id) {
 }
 
 void search(char searchMessage[], char *searchCommand) {
-  searchMessage[0] = 2;  // Set the type of message
+  searchMessage[0] = 2;
 
-  strcpy(searchCommand, "test.txt");
+  printf("Enter file name to search: ");
+  fgets(searchCommand, 100, stdin);
+  searchCommand[strcspn(searchCommand, "\n")] = 0;
 
-  memcpy(searchMessage + 1, searchCommand, strlen(searchCommand) + 1);  // +1 to include null terminator
+  // Copy the file name into searchMessage, starting from the second byte
+  memcpy(searchMessage + 1, searchCommand, strlen(searchCommand) + 1);
 }
-
 void freeFileList(FileList files) {
   for (int i = 0; i < files.fileCount; i++) {
     free(files.fileNames[i]);

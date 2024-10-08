@@ -113,7 +113,7 @@ FileList publish(char publishMessage[], int id) {
 }
 
 void search(char searchMessage[], char *searchCommand) {
-  searchMessage[0] = 2;
+  searchMessage[0] = 0x2;
 
   printf("Enter file name to search: ");
   fgets(searchCommand, 100, stdin);
@@ -205,7 +205,7 @@ int main(int argc, char *argv[]) {
       } else {
         printf("Searching for file... %s\n", searchCommand);
         int recvIt = recvall(s, searchResponse, sizeof(searchResponse));
-        if (recvIt == 10) {
+        if (recvIt) {
           // Extract the peer ID
           uint32_t peerID;
           memcpy(&peerID, &searchResponse[0], 4);

@@ -58,7 +58,7 @@ FileList fileCounter(void) {
 
   unsigned int bitCount = 0;
   for (int i = 0; i < count; i++) {
-    printf("stlen %d \n", strlen(charArr[i]));
+   // printf("stlen %d \n", strlen(charArr[i]));
     printf("count %d \n", count);
     bitCount += strlen(charArr[i]); // Include string length + null terminator
   }

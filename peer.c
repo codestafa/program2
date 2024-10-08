@@ -91,12 +91,14 @@ int recvall(int s, char *buf, int len) {
 }
 
 void join(char joinMessage[], int id) {
-  joinMessage[0] = 0x00;
+  joinMessage[0] = 0x00;  // Set the first byte to 0x00
   memcpy(joinMessage + 1, &id, 4);  // Add the ID into the message buffer
-  printf("Hex representation of publishMessage: ");
-  for (int i = 0; i <= strlen(joinMessage); i++) {
-    printf("0x%02x ", (unsigned char)joinMessage[i]);
+
+  printf("Hex representation of joinMessage: ");
+  for (int i = 0; i < sizeof(joinMessage); i++) {  // Use sizeof to loop over the message
+    printf("0x%02x ", (unsigned char)joinMessage[i]);  // Print each byte in hex
   }
+  printf("\n");
 }
 
 FileList publish(char publishMessage[], int id) {

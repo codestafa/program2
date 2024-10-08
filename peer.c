@@ -112,7 +112,7 @@ FileList publish(char publishMessage[], int id) {
   return files;
 }
 
-void search(char searchMessage[], char *searchCommand, size_t bufferSize) {
+void search(char searchMessage[], char *searchCommand) {
   searchMessage[0] = 2; // Set the type of message
 
   printf("Enter file name: ");

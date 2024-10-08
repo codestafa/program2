@@ -210,7 +210,7 @@ int main(int argc, char *argv[]) {
         int recvIt = recvall(s, searchResponse, 10);
         int count = 0;
         printf("recvit number %d, %d", count++, recvIt);
-        while (recvIt > 0) {
+        if (recvIt > 0) {
           printf("recvit number %d, %d", count++, recvIt);
           searchResponse[recvIt] = '\0'; // Null-terminate the response
 

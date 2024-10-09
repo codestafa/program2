@@ -54,18 +54,12 @@ FileList fileCounter(void) {
       count++;
     }
   }
-
-
   unsigned int bitCount = 0;
   for (int i = 0; i < count; i++) {
-   // printf("stlen %d \n", strlen(charArr[i]));
-//    printf("count %d \n", count);
     bitCount += strlen(charArr[i]); // Include string length + null terminator
   }
-//  printf("bitcount %d \n", bitCount);
-  bitCount += count;
-//  printf("bitcount %d \n", bitCount);
 
+  bitCount += count;
   closedir(dir);
 
   FileList result;
@@ -76,16 +70,10 @@ FileList fileCounter(void) {
 }
 
 
-void join(char joinMessage[], int id, int messageSize) {
+void join(char joinMessage[], int id) {
   joinMessage[0] = 0x00; // Set first byte to JOIN action
   uint32_t net_id = htonl(id); // Convert ID to network byte order
   memcpy(joinMessage + 1, &net_id, 4); // Copy the 4-byte ID
-
-//  printf("Hex representation of joinMessage: ");
-//  for (int i = 0; i < messageSize; i++) {
-//    printf("0x%02x ", (unsigned char)joinMessage[i]);
-//  }
-//  printf("\n");
 }
 
 FileList publish(char publishMessage[], int id, int messageSize, FileList files) {
@@ -100,13 +88,6 @@ FileList publish(char publishMessage[], int id, int messageSize, FileList files)
     memcpy(publishMessage + offset, files.fileNames[i], nameLength);
     offset += nameLength;
   }
-
-//  printf("Hex representation of publishMessage: ");
-//  for (int i = 0; i < messageSize; i++) {
-//    printf("0x%02x ", (unsigned char)publishMessage[i]);
-//  }
-//  printf("\n");
-
   return files;
 }
 
@@ -118,11 +99,6 @@ void search(char searchMessage[], char *searchCommand) {
 
   memcpy(searchMessage + 1, searchCommand, strlen(searchCommand) + 1);
 
-//  printf("Hex representation of searchMessage: ");
-//  for (int i = 0; i < strlen(searchMessage) + 1; i++) {
-//    printf("0x%02x ", (unsigned char)searchMessage[i]);
-//  }
-//  printf("\n");
 }
 
 void freeFileList(FileList files) {
@@ -166,14 +142,14 @@ int main(int argc, char *argv[]) {
     fgets(userCommand, sizeof(userCommand), stdin);
     userCommand[strcspn(userCommand, "\n")] = 0; // Remove newline
 
-    if (strcmp(userCommand, "EXIT") == 0) {
+    if (strcmp(userCommand, "EXIT") == 0 || strcmp(userCommand, "exit") == 0) {
       printf("Exiting...\n");
       close(s);
       break;
     }
 
-    if (strcmp(userCommand, "JOIN") == 0 && !userJoined) {
-      join(joinMessage, id, sizeof(joinMessage));
+    if ((strcmp(userCommand, "JOIN") == 0 || strcmp(userCommand, "join") == 0) && !userJoined) {
+      join(joinMessage, id);
       if (send(s, joinMessage, sizeof(joinMessage), 0) == -1) {
         perror("send");
       } else {
@@ -181,23 +157,20 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    if (strcmp(userCommand, "PUBLISH") == 0 && userJoined) {
+    if ((strcmp(userCommand, "PUBLISH") == 0 || strcmp(userCommand, "publish") == 0) && userJoined) {
       publish(publishMessage, id, files.bitCount + 5, files);
       if (send(s, publishMessage, files.bitCount + 5, 0) == -1) {
         perror("send");
       }
     }
 
-    if (strcmp(userCommand, "SEARCH") == 0 && userJoined) {
+    if ((strcmp(userCommand, "SEARCH") == 0 || strcmp(userCommand, "search") == 0) && userJoined) {
       search(searchMessage, searchCommand);
       if (send(s, searchMessage, strlen(searchMessage) + 1, 0) == -1) {
         perror("send");
       } else {
         int recvIt = recv(s, searchResponse, 10,0);
-//        int count = 0;
-//        printf("recvit number %d, %d", count++, recvIt);
         if (recvIt > 0) {
-//          printf("recvit number %d, %d", count++, recvIt);
           searchResponse[recvIt] = '\0'; // Null-terminate the response
 
           uint32_t peerID;
@@ -215,7 +188,7 @@ int main(int argc, char *argv[]) {
           if (peerID != 0) {
             printf("File found at:\n");
             printf("  Peer %u\n", peerID);
-            printf("  %u.%u.%u.%u\n",
+            printf("  %u.%u.%u.%u",
                    (ipAddress >> 24) & 0xFF,
                    (ipAddress >> 16) & 0xFF,
                    (ipAddress >> 8) & 0xFF,

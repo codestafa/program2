@@ -19,9 +19,9 @@ typedef struct {
 FileList fileCounter(void) {
   DIR *dir;
   struct dirent *entry;
-  char *dirName = "./SharedFiles"; // Directory to scan
+  char *dirName = "./SharedFiles";
   int count = 0;
-  int maxFiles = 100; // Set a maximum number of files to track
+  int maxFiles = 100;
   char **charArr = malloc(maxFiles * sizeof(char *)); // Allocate memory for the array of strings
 
   if (!charArr) {
@@ -32,7 +32,7 @@ FileList fileCounter(void) {
   dir = opendir(dirName);
   if (!dir) {
     perror("opendir");
-    free(charArr);
+//    free(charArr);
     exit(EXIT_FAILURE);
   }
 
@@ -43,10 +43,10 @@ FileList fileCounter(void) {
       charArr[count] = malloc(len + 1);
       if (!charArr[count]) {
         perror("malloc");
-        for (int i = 0; i < count; i++) {
-          free(charArr[i]);
-        }
-        free(charArr);
+//        for (int i = 0; i < count; i++) {
+//          free(charArr[i]);
+//        }
+//        free(charArr);
         closedir(dir);
         exit(EXIT_FAILURE);
       }
@@ -71,7 +71,7 @@ FileList fileCounter(void) {
 
 
 void join(char joinMessage[], int id) {
-  char actionByte = 0x00;
+  char actionByte = 0;
   memcpy(joinMessage, &actionByte, 1);
   uint32_t net_id = htonl(id);
   memcpy(joinMessage + 1, &net_id, 4);
@@ -103,29 +103,24 @@ void search(char searchMessage[], char *searchCommand) {
 
 }
 
-//void freeFileList(FileList files) {
-//  for (int i = 0; i < files.fileCount; i++) {
-//    free(files.fileNames[i]);
-//  }
-//  free(files.fileNames);
-//}
-
 int main(int argc, char *argv[]) {
   if (argc != 4) {
     printf("Usage: %s <host> <port> <id>\n", argv[0]);
     return 1;
   }
 
+  int s;
+
   char userCommand[100];
   char searchCommand[100];
+
   char *host = argv[1];
   char *port = argv[2];
-  int s;
-  bool userJoined = false;
   int id = atoi(argv[3]);
 
   // Join
   char joinMessage[5];
+  bool userJoined = false;
 
   // Publish
   FileList files = fileCounter();
@@ -205,7 +200,6 @@ int main(int argc, char *argv[]) {
   }
 
   close(s);
-//  freeFileList(files);
   return 0;
 }
 

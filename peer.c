@@ -11,8 +11,8 @@ int lookup_and_connect( const char *host, const char *service );
 
 
 typedef struct {
-  char **fileNames;  // Array of file names
-  int fileCount;     // Number of files found
+  char **fileNames;
+  int fileCount;
   int bitCount;      // Total size of all file names + delimiters
 } FileList;
 
@@ -32,7 +32,7 @@ FileList fileCounter(void) {
   dir = opendir(dirName);
   if (!dir) {
     perror("opendir");
-    free(charArr); // Free memory if directory fails to open
+    free(charArr);
     exit(EXIT_FAILURE);
   }
 
@@ -40,7 +40,7 @@ FileList fileCounter(void) {
   while ((entry = readdir(dir)) != NULL && count < maxFiles) {
     if (entry->d_type == DT_REG) { // Only regular files
       size_t len = strlen(entry->d_name); // Get the length of the filename
-      charArr[count] = malloc(len + 1); // Allocate memory for the filename + null terminator
+      charArr[count] = malloc(len + 1);
       if (!charArr[count]) {
         perror("malloc");
         for (int i = 0; i < count; i++) {
@@ -56,7 +56,7 @@ FileList fileCounter(void) {
   }
   unsigned int bitCount = 0;
   for (int i = 0; i < count; i++) {
-    bitCount += strlen(charArr[i]); // Include string length + null terminator
+    bitCount += strlen(charArr[i]); // Counting the total bits
   }
 
   bitCount += count;
@@ -71,14 +71,15 @@ FileList fileCounter(void) {
 
 
 void join(char joinMessage[], int id) {
-  joinMessage[0] = 0x00; // Set first byte to JOIN action
-  uint32_t net_id = htonl(id); // Convert ID to network byte order
-  memcpy(joinMessage + 1, &net_id, 4); // Copy the 4-byte ID
+  char actionByte = 0x00;
+  memcpy(joinMessage, &actionByte, 1);
+  uint32_t net_id = htonl(id);
+  memcpy(joinMessage + 1, &net_id, 4);
 }
 
 FileList publish(char publishMessage[], int id, int messageSize, FileList files) {
-  publishMessage[0] = 1;
-
+  char actionByte = 1;
+  memcpy(publishMessage, &actionByte, 1);
   uint32_t fileCount_htonl = htonl(files.fileCount);
   memcpy(publishMessage + 1, &fileCount_htonl, 4);
 
@@ -92,7 +93,8 @@ FileList publish(char publishMessage[], int id, int messageSize, FileList files)
 }
 
 void search(char searchMessage[], char *searchCommand) {
-  searchMessage[0] = 0x02;
+  char actionByte = 2;
+  memcpy(searchMessage, &actionByte, 1);
   printf("Enter file name to search: ");
   fgets(searchCommand, 100, stdin);
   searchCommand[strcspn(searchCommand, "\n")] = 0;
@@ -101,12 +103,12 @@ void search(char searchMessage[], char *searchCommand) {
 
 }
 
-void freeFileList(FileList files) {
-  for (int i = 0; i < files.fileCount; i++) {
-    free(files.fileNames[i]);
-  }
-  free(files.fileNames);
-}
+//void freeFileList(FileList files) {
+//  for (int i = 0; i < files.fileCount; i++) {
+//    free(files.fileNames[i]);
+//  }
+//  free(files.fileNames);
+//}
 
 int main(int argc, char *argv[]) {
   if (argc != 4) {
@@ -127,18 +129,18 @@ int main(int argc, char *argv[]) {
 
   // Publish
   FileList files = fileCounter();
-  char publishMessage[files.bitCount + 5];
+  char publishMessage[files.bitCount + 5]; // 5 because the bitCount does not account for the previous bytes needed
 
   // Search
   char searchMessage[100];
-  char searchResponse[10]; // Increase buffer size for search response
+  char searchResponse[10];
 
   if ((s = lookup_and_connect(host, port)) < 0) {
     exit(1);
   }
 
   while (1) {
-    printf("Enter JOIN, PUBLISH, SEARCH, or exit: \n");
+    printf("Enter JOIN, PUBLISH, SEARCH, or EXIT: \n");
     fgets(userCommand, sizeof(userCommand), stdin);
     userCommand[strcspn(userCommand, "\n")] = 0; // Remove newline
 
@@ -158,7 +160,7 @@ int main(int argc, char *argv[]) {
     }
 
     if ((strcmp(userCommand, "PUBLISH") == 0 || strcmp(userCommand, "publish") == 0) && userJoined) {
-      publish(publishMessage, id, files.bitCount + 5, files);
+      publish(publishMessage, id, sizeof(publishMessage), files);
       if (send(s, publishMessage, files.bitCount + 5, 0) == -1) {
         perror("send");
       }
@@ -169,9 +171,9 @@ int main(int argc, char *argv[]) {
       if (send(s, searchMessage, strlen(searchMessage) + 1, 0) == -1) {
         perror("send");
       } else {
-        int recvIt = recv(s, searchResponse, 10,0);
+        int recvIt = recv(s, searchResponse, sizeof(searchResponse),0);
         if (recvIt > 0) {
-          searchResponse[recvIt] = '\0'; // Null-terminate the response
+          searchResponse[recvIt] = '\0';
 
           uint32_t peerID;
           uint32_t ipAddress;
@@ -203,7 +205,7 @@ int main(int argc, char *argv[]) {
   }
 
   close(s);
-  freeFileList(files);
+//  freeFileList(files);
   return 0;
 }
 

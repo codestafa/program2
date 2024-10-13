@@ -4,8 +4,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/socket.h>
 #include <unistd.h>
+
+/*
+ * EECE 446
+ * Mustafa Ali
+ * Mohsen Amiri
+ * Program 2
+ * Fall 2024
+ */
 
 // Struct to deal with files
 typedef struct {

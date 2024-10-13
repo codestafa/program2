@@ -7,101 +7,18 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-int lookup_and_connect( const char *host, const char *service );
-
-
+// Struct to deal with files
 typedef struct {
   char **fileNames;
   int fileCount;
-  int bitCount;      // Total size of all file names + delimiters
+  int bitCount; // Total size of all file names
 } FileList;
 
-FileList fileCounter(void) {
-  DIR *dir;
-  struct dirent *entry;
-  char *dirName = "./SharedFiles";
-  int count = 0;
-  int maxFiles = 100;
-  char **charArr = malloc(maxFiles * sizeof(char *)); // Allocate memory for the array of strings
-
-  if (!charArr) {
-    perror("malloc");
-    exit(EXIT_FAILURE);
-  }
-
-  dir = opendir(dirName);
-  if (!dir) {
-    perror("opendir");
-//    free(charArr);
-    exit(EXIT_FAILURE);
-  }
-
-  // Loop through directory entries
-  while ((entry = readdir(dir)) != NULL && count < maxFiles) {
-    if (entry->d_type == DT_REG) { // Only regular files
-      size_t len = strlen(entry->d_name); // Get the length of the filename
-      charArr[count] = malloc(len + 1);
-      if (!charArr[count]) {
-        perror("malloc");
-//        for (int i = 0; i < count; i++) {
-//          free(charArr[i]);
-//        }
-//        free(charArr);
-        closedir(dir);
-        exit(EXIT_FAILURE);
-      }
-      strcpy(charArr[count], entry->d_name); // Copy the filename into charArr[count]
-      count++;
-    }
-  }
-  unsigned int bitCount = 0;
-  for (int i = 0; i < count; i++) {
-    bitCount += strlen(charArr[i]); // Counting the total bits
-  }
-
-  bitCount += count;
-  closedir(dir);
-
-  FileList result;
-  result.fileNames = charArr;
-  result.fileCount = count;
-  result.bitCount = bitCount;
-  return result;
-}
-
-
-void join(char joinMessage[], int id) {
-  char actionByte = 0;
-  memcpy(joinMessage, &actionByte, 1);
-  uint32_t net_id = htonl(id);
-  memcpy(joinMessage + 1, &net_id, 4);
-}
-
-FileList publish(char publishMessage[], int id, int messageSize, FileList files) {
-  char actionByte = 1;
-  memcpy(publishMessage, &actionByte, 1);
-  uint32_t fileCount_htonl = htonl(files.fileCount);
-  memcpy(publishMessage + 1, &fileCount_htonl, 4);
-
-  int offset = 5;
-  for (int i = 0; i < files.fileCount; i++) {
-    int nameLength = strlen(files.fileNames[i]) + 1;
-    memcpy(publishMessage + offset, files.fileNames[i], nameLength);
-    offset += nameLength;
-  }
-  return files;
-}
-
-void search(char searchMessage[], char *searchCommand) {
-  char actionByte = 2;
-  memcpy(searchMessage, &actionByte, 1);
-  printf("Enter file name to search: ");
-  fgets(searchCommand, 100, stdin);
-  searchCommand[strcspn(searchCommand, "\n")] = 0;
-
-  memcpy(searchMessage + 1, searchCommand, strlen(searchCommand) + 1);
-
-}
+int lookup_and_connect(const char *host, const char *service);
+FileList fileHandler(void);
+void join(char joinMessage[], int id);
+FileList publish(char publishMessage[], FileList files);
+void search(char searchMessage[], char *searchCommand);
 
 int main(int argc, char *argv[]) {
   if (argc != 4) {
@@ -109,11 +26,12 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  int s;
+  int s; // the socket
 
   char userCommand[100];
   char searchCommand[100];
 
+  // Argument variables
   char *host = argv[1];
   char *port = argv[2];
   int id = atoi(argv[3]);
@@ -123,8 +41,10 @@ int main(int argc, char *argv[]) {
   bool userJoined = false;
 
   // Publish
-  FileList files = fileCounter();
-  char publishMessage[files.bitCount + 5]; // 5 because the bitCount does not account for the previous bytes needed
+  FileList files = fileHandler();
+  char publishMessage[files.bitCount +
+                      5]; // 5 because the bitCount does not account for the
+                          // previous bytes needed
 
   // Search
   char searchMessage[100];
@@ -139,13 +59,18 @@ int main(int argc, char *argv[]) {
     fgets(userCommand, sizeof(userCommand), stdin);
     userCommand[strcspn(userCommand, "\n")] = 0; // Remove newline
 
+    // If statement to exit the program, we are closing the socket
     if (strcmp(userCommand, "EXIT") == 0 || strcmp(userCommand, "exit") == 0) {
       printf("Exiting...\n");
       close(s);
       break;
     }
 
-    if ((strcmp(userCommand, "JOIN") == 0 || strcmp(userCommand, "join") == 0) && !userJoined) {
+    // If statement to join the registry, we only want to publish or search if
+    // userJoined is true
+    if ((strcmp(userCommand, "JOIN") == 0 ||
+         strcmp(userCommand, "join") == 0) &&
+        !userJoined) {
       join(joinMessage, id);
       if (send(s, joinMessage, sizeof(joinMessage), 0) == -1) {
         perror("send");
@@ -154,19 +79,26 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    if ((strcmp(userCommand, "PUBLISH") == 0 || strcmp(userCommand, "publish") == 0) && userJoined) {
-      publish(publishMessage, id, sizeof(publishMessage), files);
-      if (send(s, publishMessage, files.bitCount + 5, 0) == -1) {
+    // If statement to publish files into the registry
+    if ((strcmp(userCommand, "PUBLISH") == 0 ||
+         strcmp(userCommand, "publish") == 0) &&
+        userJoined) {
+      publish(publishMessage, files);
+      if (send(s, publishMessage, sizeof(publishMessage), 0) == -1) {
         perror("send");
       }
     }
 
-    if ((strcmp(userCommand, "SEARCH") == 0 || strcmp(userCommand, "search") == 0) && userJoined) {
+    // If statement to search a registry for the name of a specific file. We
+    // receive the peer id, ip, and port
+    if ((strcmp(userCommand, "SEARCH") == 0 ||
+         strcmp(userCommand, "search") == 0) &&
+        userJoined) {
       search(searchMessage, searchCommand);
       if (send(s, searchMessage, strlen(searchMessage) + 1, 0) == -1) {
         perror("send");
       } else {
-        int recvIt = recv(s, searchResponse, sizeof(searchResponse),0);
+        int recvIt = recv(s, searchResponse, sizeof(searchResponse), 0);
         if (recvIt > 0) {
           searchResponse[recvIt] = '\0';
 
@@ -185,10 +117,8 @@ int main(int argc, char *argv[]) {
           if (peerID != 0) {
             printf("File found at:\n");
             printf("  Peer %u\n", peerID);
-            printf("  %u.%u.%u.%u",
-                   (ipAddress >> 24) & 0xFF,
-                   (ipAddress >> 16) & 0xFF,
-                   (ipAddress >> 8) & 0xFF,
+            printf("  %u.%u.%u.%u", (ipAddress >> 24) & 0xFF,
+                   (ipAddress >> 16) & 0xFF, (ipAddress >> 8) & 0xFF,
                    ipAddress & 0xFF);
             printf(":%u\n", port);
           } else {
@@ -202,7 +132,6 @@ int main(int argc, char *argv[]) {
   close(s);
   return 0;
 }
-
 
 int lookup_and_connect(const char *host, const char *service) {
   struct addrinfo hints;
@@ -230,7 +159,6 @@ int lookup_and_connect(const char *host, const char *service) {
     if (connect(s, rp->ai_addr, rp->ai_addrlen) != -1) {
       break;
     }
-
   }
   if (rp == NULL) {
     perror("stream-talk-client: connect");
@@ -239,4 +167,91 @@ int lookup_and_connect(const char *host, const char *service) {
   freeaddrinfo(result);
 
   return s;
+}
+
+// Function that the handles the file logic. It counts the number of files,
+// counts the total bits, and gets file names
+FileList fileHandler(void) {
+  DIR *dir;
+  struct dirent *entry;
+  char *dirName = "./SharedFiles";
+  int count = 0;
+  int maxFiles = 100;
+  char **charArr = malloc(
+      maxFiles * sizeof(char *)); // Allocate memory for the array of strings
+
+  if (!charArr) {
+    perror("malloc");
+    exit(EXIT_FAILURE);
+  }
+
+  dir = opendir(dirName);
+  if (!dir) {
+    perror("opendir");
+    exit(EXIT_FAILURE);
+  }
+
+  // Loop through directory entries
+  while ((entry = readdir(dir)) != NULL && count < maxFiles) {
+    if (entry->d_type == DT_REG) {        // Only regular files
+      size_t len = strlen(entry->d_name); // Get the length of the filename
+      charArr[count] = malloc(len + 1);
+      if (!charArr[count]) {
+        perror("malloc");
+        closedir(dir);
+        exit(EXIT_FAILURE);
+      }
+      strcpy(charArr[count],
+             entry->d_name); // Copy the filename into charArr[count]
+      count++;               // Increment file count
+    }
+  }
+  unsigned int bitCount = 0;
+  for (int i = 0; i < count; i++) {
+    bitCount += strlen(charArr[i]); // Counting the total bits
+  }
+
+  bitCount += count; // Add to total bitCount
+  closedir(dir);
+
+  FileList result;
+  result.fileNames = charArr;
+  result.fileCount = count;
+  result.bitCount = bitCount;
+  return result;
+}
+
+// Function for joining a registry
+void join(char joinMessage[], int id) {
+  char actionByte = 0;
+  memcpy(joinMessage, &actionByte, 1);
+  uint32_t net_id = htonl(id);
+  memcpy(joinMessage + 1, &net_id, 4);
+}
+
+// Function for publishing files to a registry
+FileList publish(char publishMessage[], FileList files) {
+  char actionByte = 1;
+  memcpy(publishMessage, &actionByte, 1);
+  uint32_t fileCount_htonl = htonl(files.fileCount);
+  memcpy(publishMessage + 1, &fileCount_htonl, 4);
+
+  int offset = 5;
+  for (int i = 0; i < files.fileCount; i++) {
+    int nameLength = strlen(files.fileNames[i]) + 1;
+    memcpy(publishMessage + offset, files.fileNames[i], nameLength);
+    offset += nameLength;
+  }
+  return files;
+}
+
+// Function to search a registry for a file name
+void search(char searchMessage[], char *searchCommand) {
+  char actionByte = 2;
+  memcpy(searchMessage, &actionByte, 1);
+  printf("Enter file name to search: ");
+  fgets(searchCommand, 100, stdin);
+  searchCommand[strcspn(searchCommand, "\n")] = 0;
+
+  memcpy(searchMessage + 1, searchCommand, strlen(searchCommand) + 1);
 }

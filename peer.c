@@ -22,7 +22,7 @@ typedef struct {
 } FileList;
 
 int lookup_and_connect(const char *host, const char *service);
-FileList fileHandler(void);
+FileList fileHandler();
 void join(char joinMessage[], int id);
 FileList publish(char publishMessage[], FileList files);
 void search(char searchMessage[], char *searchCommand);
@@ -178,7 +178,7 @@ int lookup_and_connect(const char *host, const char *service) {
 
 // Function that the handles the file logic. It counts the number of files,
 // counts the total bits, and gets file names
-FileList fileHandler(void) {
+FileList fileHandler() {
   DIR *dir;
   struct dirent *entry;
   char *dirName = "./SharedFiles";
